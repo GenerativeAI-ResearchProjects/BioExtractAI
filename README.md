@@ -11,6 +11,22 @@ The final goal is to assess how closely AI-derived outputs align with a **human-
 ---
 ## Significance and Objective
 
+Scientific databases such as those tracking HIV drug resistance depend on accurate and up-to-date information extracted from the primary literature. However, **manual curation**:reading each paper, identifying relevant experiments, and summarizing their findings,is a slow and resource-intensive process that limits scalability.
+
+This project explores how an **AI-based adjudication framework** can accelerate and enhance literature curation by automatically reading and interpreting papers, verifying consistency across multiple reasoning paths, and producing **high-confidence summaries** suitable for database integration.
+
+Our initial application focuses on HIV drug resistance research, where the system extracts key details such as drug susceptibility data and mutation effects, tasks that traditionally require expert biologists to perform manually. By automating this process, the tool can:
+
+- **Substantially reduce human workload** in maintaining specialized scientific databases.  
+- Provide **transparent, evidence-linked outputs** that remain interpretable to domain experts.  
+- Enable **continuous, semi-automated updates** as new literature becomes available.
+
+**What is novel about our approach:**  
+Unlike standard single-pass AI extraction, this system performs **three independent QA runs per question**, capturing diverse reasoning paths and revealing inconsistencies or uncertainties in model outputs. A dedicated **Expert Adjudicator Agent** then critically reviews these multiple outputs, **audits the validity of cited evidence**, checks **domain-specific understanding**, and synthesizes a **single, high-confidence answer**. This two-stage, multi-agent design improves accuracy, provides interpretable rationales, and systematically **addresses common AI errors** such as missing evidence, citation misuse, or domain misunderstandings.
+
+While this prototype focuses on HIV, the underlying approach using **multi-agent reasoning and expert adjudication** offers a **general blueprint for scientific information extraction**. With minor adaptation, the same framework could assist in other domains where structured knowledge must be distilled from large bodies of research.
+
+
 
 
 ---
