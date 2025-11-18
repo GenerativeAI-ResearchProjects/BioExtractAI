@@ -104,17 +104,20 @@ While this prototype focuses on HIV, the underlying approach using **multi-agent
   <img src="Figures/deepseek-chat-adj_vs_3runs_diff.png" alt="Claude" width="600"/>
 </p>
 
-## Adjudication Performance
+#### Overall Trend & Analysis
+
+### Adjudication vs Basic Performance
 
 Across the three evaluated LLMs, Questions 8 and 9 showed the largest performance gains. These items were predominantly yes/no questions, and many responses were previously marked as **NaN** (“not reported”) when the models were run independently. Notably, in several cases where all three model outputs were erroneous, the adjudicator was still able to identify, locate, and correct the mistake. This demonstrates that the adjudication step does not simply rely on the outputs of the individual model runs but can independently resolve errors, an important indicator of its added value.
 
 The adjudicator improves performance in several key scenarios:
 <br><br>
-### 1. When the three AI runs yield inconsistent answers
+
+#### 1. When the three AI runs yield inconsistent answers
 Even when the three independent runs disagree with one another, the adjudicator can examine the supporting evidence and select the answer that is better grounded in the original text. Instead of defaulting to majority vote or superficial alignment, it makes a reasoned judgment about which answer is more credible.
 <br><br>
 
-### 2. When all three answers are consistent but still incorrect
+#### 2. When all three answers are consistent but still incorrect
 The adjudicator does not become misled by consistency. Even if all three model runs produce the **same wrong answer**, it evaluates the reasoning and evidence independently. It does not simply choose the answer that “fits best” among incorrect options; it can override all of them when necessary.
 
 This includes multiple failure modes:
@@ -138,11 +141,19 @@ Sometimes the models base their answers on only a subset of the relevant context
 <br><br>
 
 
-
-#### Overall Trend & Analysis
-
 ### Comparison Across Models
 
+<p align="center">
+  <img src="Figures/QID_accuracy_across_models_basic.png" alt="Claude" width="600"/>
+</p>
+
+<p align="center">
+  <img src="Figures/QID_accuracy_across_models_adjudicated.png" alt="Claude" width="600"/>
+</p>
+
+The comparison of the three models: GPT-5, DeepSeek Chat V1, and Claude Oput 4.1, shows their average per question accuracy across three runs. Questions 8, 9, and 19 had the lowest overall accuracy. Questions 9 and 19 are Boolean, which are particularly challenging for the models and often left unreported in individual runs, while Question 8 is categorical, highlighting difficulties with more variable answer types. GPT and Claude generally performed slightly better than DeepSeek, although for the Boolean Question 19, DeepSeek was comparable or slightly better. This highlights both the relative strengths of GPT and Claude across most question types and the persistent difficulty of certain items for all models.
+
+With the adjudicator applied, GPT-5 consistently achieved the highest overall performance, followed by Claude and then DeepSeek. After adjudication, GPT-5 reached an average accuracy of approximately 0.99, Claude 0.96, and DeepSeek 0.94. In comparison, before adjudication, the average accuracies were lower, with GPT-5 at 0.91, Claude at 0.92, and DeepSeek at 0.88. This demonstrates that the adjudication step not only improves accuracy for all models but also amplifies the performance differences, particularly highlighting GPT-5’s relative strength in resolving previously unreported or incorrect responses.
 
 ### Cost Analysis
 

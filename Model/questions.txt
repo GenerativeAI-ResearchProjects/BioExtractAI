@@ -1,0 +1,19 @@
+1: Does the paper report HIV sequences from patient samples?
+2: Does the paper report in vitro drug susceptibility data?
+3: What were the GenBank accession numbers for sequenced HIV isolates?
+4: Which HIV species were studied in the paper?
+5: Which HIV genes were reported to have been sequenced?
+6: From which countries were the sequenced samples obtained?
+7: From what years were the sequenced samples obtained?
+8: What method was used for sequencing? Sanger or NGS or Not Reported?
+9: Were samples cloned prior to sequencing?
+10: Did samples undergo single genome sequencing?
+11: Which types of samples were sequenced? (Select all that apply: Plasma, Whole Blood, PBMC, Proviral DNA, Serum)
+12: Were any sequences obtained from individuals with virological failure on a treatment regimen?
+13: Were any sequences obtained from the proviral DNA reservoir?
+14: Were the patients in the study in a clinical trial?
+15: How many individuals had samples obtained for HIV sequencing? Count all sequenced regardless successful or not.
+16: Does the paper report HIV sequences from individuals who had received ARV drugs?
+17: Which drug classes were received by individuals in the study?
+18: Which drugs were received by individuals in the study?
+19: Are sequences from the paper made publicly available and still accessible now? Follow and check the link if provided.
