@@ -106,6 +106,20 @@ While this prototype focuses on HIV, the underlying approach using **multi-agent
 
 #### Overall Trend & Analysis
 
+Across all three evaluated LLMs (Claude, DeepSeek, and GPT-5), adjudication consistently improved model accuracy on the 19 HIV-literature interpretation questions. While the magnitude of improvement varied by model, the overall pattern of which questions benefited most was highly consistent across all bar charts.
+
+Large, Consistent Gains on Complex or Hard-to-Answer Questions (Q8, Q9, and Q19)
+
+The largest accuracy gains were observed on Q8 (sequencing method), Q9 (sample cloning), and Q19 (public availability of sequences), with improvements frequently ranging from 0.10 to over 0.30. These questions are inherently more challenging because they require synthesis of multiple text elements, interpretation of subtle methodological details, or verification of external links. The adjudicator effectively corrected systematic errors that base models repeatedly made, particularly on these complex, categorical or verification-focused tasks.
+
+Occasional Small Decreases
+
+A few questions, such as Q10 (single genome sequencing), showed slight decreases in accuracy for some models, particularly DeepSeek and Claude, often around –0.02 to –0.04. These minor drops occurred primarily when base model outputs were already correct but the adjudicator over-corrected. Despite these occasional negative deltas, the overall effect of adjudication remained strongly positive across the question set.
+
+Summary
+
+Overall, adjudication provides the greatest benefit for complex categorical and verification tasks, moderately improves simpler Boolean and easier categorical questions, and rarely introduces small negative effects. This pattern highlights the adjudicator’s role in reducing systematic errors and enhancing reliability in interpreting HIV literature.
+
 ### Adjudication vs Basic Performance
 
 Across the three evaluated LLMs, Questions 8 and 9 showed the largest performance gains. These items were predominantly yes/no questions, and many responses were previously marked as **NaN** (“not reported”) when the models were run independently. Notably, in several cases where all three model outputs were erroneous, the adjudicator was still able to identify, locate, and correct the mistake. This demonstrates that the adjudication step does not simply rely on the outputs of the individual model runs but can independently resolve errors, an important indicator of its added value.
@@ -167,3 +181,31 @@ The adjudication step is not a passive aggregator of model outputs. It is an ind
 - Recover missing or misread evidence by re-examining the full source text.
 
 These behaviors make adjudication a valuable component of the pipeline that showed significant improvement, addressing multiple common problems that the current AI models have when performing information-extraction tasks.
+
+### Limitations
+
+Despite its promise, several limitations remain:
+
+- Dependence on Source Text Quality: AI models can only extract what is explicitly or implicitly present in the paper. Poorly reported experiments, ambiguous wording, or missing metadata can still lead to incomplete or incorrect answers, even after adjudication.
+
+- Categorical vs. Boolean Challenges: While adjudication improves performance on both Boolean and categorical questions, categorical questions—such as drug types, sample sources, or GenBank accession numbers—remain more error-prone due to their open-ended nature and diverse possible answers.
+
+- Scaling to Large Corpora: Running three independent QA passes plus adjudication for each paper increases computational cost and processing time. While feasible for focused datasets (e.g., HIV drug resistance papers), scaling to tens of thousands of publications will require optimizations or selective triaging.
+
+- Reliance on AI Expertise: The adjudicator itself is an AI model trained to critically evaluate outputs. Systematic biases in the adjudicator could propagate if not monitored, and the quality of adjudication may vary across domains or as models evolve.
+
+- Evaluation Limitations: Agreement with the human gold standard measures overall correctness but may not capture subtle differences in evidence interpretation or nuanced reasoning. Some outputs may be factually correct yet diverge from the gold standard due to interpretive differences.
+
+### Going Forward
+
+Future directions to strengthen the framework include:
+
+- Adaptive Question Prioritization: Dynamically assigning more adjudication resources to difficult categorical or verification-focused questions, reducing unnecessary computation for simpler Boolean tasks.
+
+- Multi-Source Integration: Extending the system to cross-reference multiple papers or databases, allowing adjudication to resolve inconsistencies and fill gaps in evidence from a broader context.
+
+- Human-in-the-Loop Feedback: Incorporating expert review to periodically audit adjudicated answers, refine adjudicator heuristics, and identify domain-specific pitfalls, further improving reliability.
+
+- Model Updates and Fine-Tuning: Iteratively retraining both the base QA models and the adjudicator on newly curated data can reduce recurring errors and improve generalizability across scientific domains.
+
+- Automated Evidence Verification: Developing mechanisms to automatically check links, accession numbers, and reported experimental data can further reduce errors in questions like public sequence availability or GenBank accession reporting.
