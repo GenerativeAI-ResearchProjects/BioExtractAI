@@ -74,3 +74,42 @@ While this prototype focuses on HIV, the underlying approach using **multi-agent
 ---
 
 ## Results
+
+### Average of 3 Runs vs Adjucator Accuracy 
+
+#### GPT-5
+<p align="center">
+  <img src="images/gpt-5-adj_vs_3runs.png" alt="GPT-5" width="600"/>
+</p>
+
+<p align="center">
+  <img src="images/gpt-5-adj_vs_3runs_diff.png" alt="GPT-5" width="600"/>
+</p>
+
+#### Claude Opus 4.1
+<p align="center">
+  <img src="images/claude-opus-4-1-20250805-adj_vs_3runs.png" alt="Claude" width="600"/>
+</p>
+<p align="center">
+  <img src="images/claude-opus-4-1-20250805-adj_vs_3runs_diff.png" alt="Claude" width="600"/>
+</p>
+
+
+#### DeepSeek Chat V1
+<p align="center">
+  <img src="images/deepseek-chat-adj_vs_3runs.png" alt="DeepSeek" width="600"/>
+</p>
+
+<p align="center">
+  <img src="images/deepseek-chat-adj_vs_3runs_diff.png" alt="Claude" width="600"/>
+</p>
+
+#### Overall Trend & Analysis
+
+### Comparison Across Models
+
+
+### Cost Analysis
+
+
+## Limitations and Going Forward
