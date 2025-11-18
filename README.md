@@ -33,7 +33,7 @@ While this prototype focuses on HIV, the underlying approach using **multi-agent
 ## Workflow Description
 
 <p align="center">
-  <img src="images/workflow_diagram.png" alt="Workflow Diagram" width="600"/>
+  <img src="Figures/workflow_diagram.png" alt="Workflow Diagram" width="600"/>
 </p>
 
 
@@ -79,30 +79,65 @@ While this prototype focuses on HIV, the underlying approach using **multi-agent
 
 #### GPT-5
 <p align="center">
-  <img src="images/gpt-5-adj_vs_3runs.png" alt="GPT-5" width="600"/>
+  <img src="Figures/gpt-5-adj_vs_3runs.png" alt="GPT-5" width="600"/>
 </p>
 
 <p align="center">
-  <img src="images/gpt-5-adj_vs_3runs_diff.png" alt="GPT-5" width="600"/>
+  <img src="Figures/gpt-5-adj_vs_3runs_diff.png" alt="GPT-5" width="600"/>
 </p>
 
 #### Claude Opus 4.1
 <p align="center">
-  <img src="images/claude-opus-4-1-20250805-adj_vs_3runs.png" alt="Claude" width="600"/>
+  <img src="Figures/claude-opus-4-1-20250805-adj_vs_3runs.png" alt="Claude" width="600"/>
 </p>
 <p align="center">
-  <img src="images/claude-opus-4-1-20250805-adj_vs_3runs_diff.png" alt="Claude" width="600"/>
+  <img src="Figures/claude-opus-4-1-20250805-adj_vs_3runs_diff.png" alt="Claude" width="600"/>
 </p>
 
 
 #### DeepSeek Chat V1
 <p align="center">
-  <img src="images/deepseek-chat-adj_vs_3runs.png" alt="DeepSeek" width="600"/>
+  <img src="Figures/deepseek-chat-adj_vs_3runs.png" alt="DeepSeek" width="600"/>
 </p>
 
 <p align="center">
-  <img src="images/deepseek-chat-adj_vs_3runs_diff.png" alt="Claude" width="600"/>
+  <img src="Figures/deepseek-chat-adj_vs_3runs_diff.png" alt="Claude" width="600"/>
 </p>
+
+## Adjudication Performance
+
+Across the three evaluated LLMs, Questions 8 and 9 showed the largest performance gains. These items were predominantly yes/no questions, and many responses were previously marked as **NaN** (“not reported”) when the models were run independently. Notably, in several cases where all three model outputs were erroneous, the adjudicator was still able to identify, locate, and correct the mistake. This demonstrates that the adjudication step does not simply rely on the outputs of the individual model runs but can independently resolve errors, an important indicator of its added value.
+
+The adjudicator improves performance in several key scenarios:
+<br><br>
+### 1. When the three AI runs yield inconsistent answers
+Even when the three independent runs disagree with one another, the adjudicator can examine the supporting evidence and select the answer that is better grounded in the original text. Instead of defaulting to majority vote or superficial alignment, it makes a reasoned judgment about which answer is more credible.
+<br><br>
+
+### 2. When all three answers are consistent but still incorrect
+The adjudicator does not become misled by consistency. Even if all three model runs produce the **same wrong answer**, it evaluates the reasoning and evidence independently. It does not simply choose the answer that “fits best” among incorrect options; it can override all of them when necessary.
+
+This includes multiple failure modes:
+
+<div style="margin-left: 20px;">
+
+**a. All three AI runs fail to follow the prompt format**  
+For example, when the question requires a **yes/no** answer but all three models return **NaN** or **not reported**, the adjudicator can re-examine the text, extract the relevant evidence, and produce a clear, well-formatted yes/no answer that matches the expected output format.
+
+<br>
+
+**b. All three AI runs hallucinate or misinterpret the content**  
+When the models provide the same false interpretation, due to missing domain knowledge or hallucinated details, the adjudicator can detect flawed reasoning, identify unsupported statements, and correct the answer using only information grounded in the paper.
+
+<br>
+
+**c. All three AI runs miss crucial parts of the text**  
+Sometimes the models base their answers on only a subset of the relevant context and overlook key passages. The adjudicator can re-read the full text, locate the overlooked information, and provide a correct answer that incorporates the complete set of evidence.
+
+</div>
+<br><br>
+
+
 
 #### Overall Trend & Analysis
 
@@ -113,3 +148,11 @@ While this prototype focuses on HIV, the underlying approach using **multi-agent
 
 
 ## Limitations and Going Forward
+### Takeaway
+The adjudication step is not a passive aggregator of model outputs. It is an independent reasoning layer that can:
+
+- Resolve contradictions between runs by weighing evidence;
+- Overturn unanimous but incorrect model outputs by applying independent critical analysis; and
+- Recover missing or misread evidence by re-examining the full source text.
+
+These behaviors make adjudication a valuable component of the pipeline that showed significant improvement, addressing multiple common problems that the current AI models have when performing information-extraction tasks.
