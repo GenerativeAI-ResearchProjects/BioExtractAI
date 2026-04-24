@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BioExtractAI</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">◈</span>
+      <span class="name">BioExtractAI</span>
+      <span class="tag">multi-run QA + expert adjudication over scientific papers</span>
+    </div>
+    <div class="env" id="envStatus">checking providers…</div>
+  </header>
+
+  <main class="layout">
+    <!-- ─── CONFIG PANEL ─────────────────────────────────────────────── -->
+    <section class="panel config">
+      <h2>Configuration</h2>
+
+      <form id="runForm" autocomplete="off">
+        <fieldset>
+          <legend>
+            Paper
+            <button type="button" class="reset-link" data-reset="paper" title="Restore the example paper path">reset to example</button>
+          </legend>
+          <label class="field">
+            <span>Upload file (.md / .txt / .pdf)</span>
+            <input type="file" id="paperFile" accept=".md,.txt,.pdf" />
+          </label>
+          <div class="or">— or —</div>
+          <label class="field">
+            <span>Server-side path to a <code>.md</code> / <code>.txt</code> / <code>.pdf</code> file <em class="editable-hint">(editable example — change, or clear and upload instead)</em></span>
+            <input type="text" id="paperPath"
+                   value="Papers/20008779/20008779.checked.md"
+                   placeholder="Papers/20008779/20008779.checked.md" />
+            <small class="hint">Point at the actual file. A directory also works here (this CLI auto-resolves to the <code>.checked.md</code> inside), but a file path is portable across tools.</small>
+          </label>
+        </fieldset>
+
+        <fieldset>
+          <legend>
+            Questions
+            <button type="button" class="reset-link" data-reset="questions" title="Restore the example 19-question HIV set">reset to example</button>
+            <button type="button" class="reset-link" data-reset="clearQuestions" title="Clear all questions">clear</button>
+          </legend>
+          <label class="field">
+            <span>One question per line (numbering like <code>1:</code> is stripped) <em class="editable-hint">— edit, add, remove freely</em></span>
+            <textarea id="questionsText" rows="12" placeholder="Does the paper report HIV sequences from patient samples?&#10;Does the paper report in vitro drug susceptibility data?">Does the paper report HIV sequences from patient samples?
+Does the paper report in vitro drug susceptibility data?
+What were the GenBank accession numbers for sequenced HIV isolates?
+Which HIV species were studied in the paper?
+Which HIV genes were reported to have been sequenced?
+From which countries were the sequenced samples obtained?
+From what years were the sequenced samples obtained?
+What method was used for sequencing? Sanger or NGS or Not Reported?
+Were samples cloned prior to sequencing?
+Did samples undergo single genome sequencing?
+Which types of samples were sequenced? (Select all that apply: Plasma, Whole Blood, PBMC, Proviral DNA, Serum)
+Were any sequences obtained from individuals with virological failure on a treatment regimen?
+Were any sequences obtained from the proviral DNA reservoir?
+Were the patients in the study in a clinical trial?
+How many individuals had samples obtained for HIV sequencing? Count all sequenced regardless successful or not.
+Does the paper report HIV sequences from individuals who had received ARV drugs?
+Which drug classes were received by individuals in the study?
+Which drugs were received by individuals in the study?
+Are sequences from the paper made publicly available and still accessible now? Follow and check the link if provided.</textarea>
+          </label>
+          <label class="field small">
+            <span>Or upload a questions file</span>
+            <input type="file" id="questionsFile" accept=".txt,.md" />
+          </label>
+        </fieldset>
+
+        <fieldset>
+          <legend>QA agent</legend>
+          <label class="field">
+            <span>Model <em class="editable-hint">(pick one — provider is inferred from the name)</em></span>
+            <select id="modelSelect" class="model-select"><option value="">(loading…)</option></select>
+            <input type="text" id="modelCustom" class="hidden" placeholder="custom model name" />
+            <small class="hint">Provider is inferred from the model prefix (<code>gpt-*</code> → openai, <code>claude-*</code> → anthropic, <code>deepseek-*</code> → deepseek).</small>
+          </label>
+          <label class="field inline">
+            <span>Force provider (optional)</span>
+            <select id="provider">
+              <option value="">(infer)</option>
+              <option value="openai">openai</option>
+              <option value="anthropic">anthropic</option>
+              <option value="deepseek">deepseek</option>
+            </select>
+          </label>
+          <label class="field inline">
+            <span>Runs</span>
+            <input type="number" id="runs" value="3" min="0" max="10" />
+          </label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Domain Research Agent</legend>
+          <label class="toggle">
+            <input type="checkbox" id="useDomainAgent" checked />
+            <span>Enable — research the question set with web search per run</span>
+          </label>
+          <label class="field inline">
+            <span>Max web searches per run</span>
+            <input type="number" id="maxSearches" value="5" min="0" max="30" />
+          </label>
+          <p class="hint">3 runs = 3 different personas: literal domain expert, comparative context expert, skeptical methods critic.</p>
+        </fieldset>
+
+        <fieldset>
+          <legend>Adjudicator</legend>
+          <label class="toggle">
+            <input type="checkbox" id="useAdjudicator" checked />
+            <span>Enable — fuse the runs into a final answer</span>
+          </label>
+          <label class="field">
+            <span>Adjudicator model <em class="editable-hint">(leave as "same as QA" to reuse the QA model)</em></span>
+            <select id="adjudicatorModelSelect" class="model-select"><option value="">(same as QA)</option></select>
+            <input type="text" id="adjudicatorModelCustom" class="hidden" placeholder="custom adjudicator model" />
+          </label>
+        </fieldset>
+
+        <fieldset>
+          <legend>API keys <em class="editable-hint">(one per provider — leave blank to use the env var)</em></legend>
+          <label class="field">
+            <span>OpenAI — <code>OPENAI_API_KEY</code> <span class="env-status" data-env="openai"></span></span>
+            <input type="password" id="openaiApiKey" placeholder="sk-..." />
+          </label>
+          <label class="field">
+            <span>Anthropic — <code>ANTHROPIC_API_KEY</code> <span class="env-status" data-env="anthropic"></span></span>
+            <input type="password" id="anthropicApiKey" placeholder="sk-ant-..." />
+          </label>
+          <label class="field">
+            <span>DeepSeek — <code>DEEPSEEK_API_KEY</code> <span class="env-status" data-env="deepseek"></span></span>
+            <input type="password" id="deepseekApiKey" placeholder="sk-..." />
+          </label>
+          <p class="hint">Keys are sent only to the local server for the duration of the run and are never persisted to disk.</p>
+        </fieldset>
+
+        <fieldset class="collapsible">
+          <legend>Advanced</legend>
+          <label class="field inline">
+            <span>Max output tokens</span>
+            <input type="number" id="maxTokens" value="4096" min="256" max="32768" step="256" />
+          </label>
+        </fieldset>
+
+        <div class="actions">
+          <button type="submit" class="primary" id="runBtn">Run pipeline</button>
+          <button type="button" id="stopBtn" class="ghost" disabled>Stop streaming</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ─── RESULTS PANEL ─────────────────────────────────────────────── -->
+    <section class="panel results">
+      <div class="panel-header">
+        <h2>Progress &amp; results</h2>
+        <div id="statusChip" class="chip idle">idle</div>
+      </div>
+
+      <div id="placeholder" class="placeholder">
+        <p>Configure the pipeline on the left and press <b>Run pipeline</b>.</p>
+        <p>Once it starts, you'll see each run's <b>Domain Research Agent</b> interact with the <b>QA Agent</b>, followed by the adjudicated answers.</p>
+      </div>
+
+      <div id="runSummary" class="summary hidden"></div>
+
+      <section id="downloadsSection" class="downloads hidden">
+        <h3>Download</h3>
+        <div class="download-buttons">
+          <a id="downloadJson" class="btn-dl" download>⤓ result.json</a>
+          <a id="downloadXlsx" class="btn-dl" download>⤓ result.xlsx</a>
+        </div>
+        <p class="hint">JSON contains everything: runs, briefings, search queries, adjudicated answers. XLSX has two sheets — <b>Answers</b> and <b>Domain_Agent</b>.</p>
+      </section>
+
+      <section id="runsSection" class="runs hidden">
+        <h3>Runs</h3>
+        <div id="runsList"></div>
+      </section>
+
+      <section id="answersSection" class="answers hidden">
+        <h3>Answers</h3>
+        <div id="answersList"></div>
+      </section>
+
+      <section id="logSection" class="log hidden">
+        <details open>
+          <summary>Event log</summary>
+          <pre id="eventLog"></pre>
+        </details>
+      </section>
+    </section>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,3 +1,21 @@
+Metadata-Version: 2.4
+Name: bioextract
+Version: 0.1.0
+Summary: Multi-run QA + expert adjudication over scientific papers.
+Author: BioExtractAI
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: anthropic>=0.30
+Requires-Dist: openai>=1.30
+Requires-Dist: pypdf>=4.0
+Provides-Extra: xlsx
+Requires-Dist: pandas>=1.5; extra == "xlsx"
+Requires-Dist: openpyxl>=3.0; extra == "xlsx"
+Provides-Extra: web
+Requires-Dist: fastapi>=0.110; extra == "web"
+Requires-Dist: uvicorn>=0.27; extra == "web"
+Requires-Dist: python-multipart>=0.0.9; extra == "web"
+
 #  AI-Assisted Scientific Paper Understanding and Evaluation
 
 ## Quick start (Web UI)
@@ -12,7 +30,7 @@ bioextract-web                                 # opens on http://127.0.0.1:8000
 
 Then in your browser:
 
-1. **Paper** — drag-and-drop a `.md`, `.txt`, or `.pdf`, or paste a server-side path to the **file** (e.g. `Papers/20008779/20008779.checked.md`). A directory path also works (this project's loader auto-resolves to the `.checked.md` / `.md` / `.pdf` inside it), but the file path is what the UI defaults to since not every downstream tool accepts directories.
+1. **Paper** — drag-and-drop a `.md`, `.txt`, or `.pdf`, or paste a server-side path (e.g. `Papers/20008779`).
 2. **Questions** — paste one per line, or upload a text file.
 3. **Model** — type any model name (e.g. `gpt-5`, `claude-opus-4-5`, `deepseek-chat`). The provider is inferred from the name and the right API-key env var is used automatically. Leave blank to auto-detect from whichever key you have set.
 4. Tweak **Runs**, **Domain Research Agent** (persona-varied web search), **Adjudicator** (optional, and can be a different model), **Max searches**, **Max tokens** — the same knobs the CLI exposes.
@@ -44,12 +62,10 @@ pip install -e .                            # from the repo root
 export ANTHROPIC_API_KEY=sk-ant-...          # or OPENAI_API_KEY / DEEPSEEK_API_KEY
 
 bioextract \
-  --paper Papers/20008779/20008779.checked.md \
+  --paper Papers/20008779 \
   --questions Model/questions.txt \
   --output-dir out/20008779
 ```
-
-> **Paper path:** pass the actual file (`.md` / `.txt` / `.pdf`). A directory path also works — the loader will pick the first `*.checked.md`, `*.md`, `*.txt`, or `*.pdf` it finds inside — but a direct file path is portable across other tools.
 
 The CLI:
 1. loads the paper (`.md`, `.txt`, `.pdf`, or a directory containing one of those);
@@ -64,7 +80,7 @@ Common flags:
 
 | flag | purpose |
 |---|---|
-| `--paper / -p PATH` | path to the paper **file** (`.md` / `.txt` / `.pdf`) — required. A directory path also works and auto-resolves to the first matching file inside. |
+| `--paper / -p PATH` | path to paper file or directory (required) |
 | `--questions / -q PATH` | path to questions text file (required) |
 | `--model MODEL` | model name — **provider is inferred from it** (`gpt-*` → openai, `claude-*` → anthropic, `deepseek-*` → deepseek) and the matching API-key env var is used automatically |
 | `--provider {openai,anthropic,deepseek}` | force a provider (otherwise inferred from `--model`, or the first API key set in the environment) |
@@ -89,7 +105,7 @@ Examples:
 
 ```bash
 # Minimal: auto-detect provider from env, adjudicate over 3 runs, print text.
-bioextract -p Papers/20008779/20008779.checked.md -q Model/questions.txt
+bioextract -p Papers/20008779 -q Model/questions.txt
 
 # Just name the model — provider + API key are inferred.
 bioextract -p my_paper.pdf -q my_questions.txt --model claude-opus-4-5
@@ -113,7 +129,7 @@ from bioextract import load_paper, load_questions, run_qa
 from bioextract.llm import LLMClient
 from bioextract.adjudicator import adjudicate_all, group_runs_by_question
 
-paper = load_paper("Papers/20008779/20008779.checked.md")
+paper = load_paper("Papers/20008779")
 questions = load_questions("Model/questions.txt")
 client = LLMClient(provider="anthropic", model="claude-opus-4-5")
 

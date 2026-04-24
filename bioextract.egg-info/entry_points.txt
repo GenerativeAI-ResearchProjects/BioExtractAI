@@ -1,0 +1,3 @@
+[console_scripts]
+bioextract = bioextract.cli:main
+bioextract-web = bioextract.server:cli_main

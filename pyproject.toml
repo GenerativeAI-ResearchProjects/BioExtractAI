@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bioextract"
+version = "0.1.0"
+description = "Multi-run QA + expert adjudication over scientific papers."
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [{ name = "BioExtractAI" }]
+dependencies = [
+    "anthropic>=0.30",
+    "openai>=1.30",
+    "pypdf>=4.0",
+]
+
+[project.optional-dependencies]
+xlsx = ["pandas>=1.5", "openpyxl>=3.0"]
+web = ["fastapi>=0.110", "uvicorn>=0.27", "python-multipart>=0.0.9"]
+
+[project.scripts]
+bioextract = "bioextract.cli:main"
+bioextract-web = "bioextract.server:cli_main"
+
+[tool.setuptools.packages.find]
+include = ["bioextract*"]
+
+[tool.setuptools.package-data]
+bioextract = ["static/*.html", "static/*.css", "static/*.js"]
